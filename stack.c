@@ -49,6 +49,7 @@ init(int size)
 
 int push(char * str)
 {
+
   if ( (top + 1) == MAX_SIZE ) {
     printf(" stack full, top = %d\n", top);
     return -1;
@@ -59,7 +60,8 @@ int push(char * str)
     return -1;
   }
 
-  stack[top++] = str;
+  stack[top++] = strdup(str); //This is critical to use strdup
+                              //to preserve the string in stack
   
   return 0;
 
@@ -73,9 +75,12 @@ pop(void)
 {
   
   char * ret;
+
   if (top != 0){
+    
     ret = stack[--top];
     stack[top] = NULL;
+    //printf ("Returning %s\n", ret);
     return ret;
   }
   else {
@@ -86,7 +91,19 @@ pop(void)
   
 }
 
+/*
+ * print 
+ */
+static void
+printStack(void)
+{
+  int i;
+  for (i = 0; i < top; i++){
+    printf(" %s ",stack[i]);
+  }
 
+  printf (" Done printing stack!\n");
+}
 
 /*
  * main
@@ -100,22 +117,25 @@ void main (void)
 
   printf ("Please input strings, end with '-' \n");
   while (scanf("%s", str)) {
-
+    
     printf(" Input: %s\n", str);
-    if (memcmp(str,"-",1) == 0) 
+    if (memcmp(str,"-",1) == 0) { 
       break;
+    }
 
     if (push(str) < 0){
       printf (" push failed\n");
       return;
     }
+    printStack();
+
   }
 
   printf ("Now pop the stack\n");
   
   char * ret = NULL;
-  while (!(ret = pop())) {
-    printf ("%s ",ret);
+  while ((ret = pop())) {
+    printf ( " %s ",ret);
   }
   printf ("\n");
   printf (" All done! \n");
