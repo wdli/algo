@@ -23,6 +23,28 @@ int head = 0; //head pointer
 int tail = 0; //tail pointer
 int qlen = 0;
 
+/*
+ * printq
+ */
+void printq(void)
+{
+  if (!qlen) {
+    printf (" printq The queue is empty!\n");
+    return;
+  }
+  
+  int i,j,l;
+  int start;
+  
+  printf ("+++ qlen = %d, head = %d, tail = %d +++\n",qlen, head, tail);
+  for ( i = head,l=qlen; l > 0; i++,l--) {
+    printf ("%s ", queue[i]);
+    i = i % MAX_SIZE;
+  }
+  printf ("\n----------------------------------------\n");
+
+  return;
+}
 
 /*
  * enqueue
@@ -32,12 +54,16 @@ static int enqueue(char* item)
 
   if (qlen == MAX_SIZE) {
     printf ("The queue is full!\n");
+    printq();
     return -1;
   }
 
   queue[tail++] = strdup(item);
   qlen++;
-  tail = tail % MAX_SIZE;
+
+  tail = tail % MAX_SIZE; //This takes care of the tail 
+                          //pointer wrap around
+
   printf (" Now tail = %d, qlen = %d\n",tail,qlen);
 
   return 0;
@@ -50,24 +76,19 @@ static int enqueue(char* item)
 static char* dequeue(void)
 {
 
-  if (head == tail) {
-    printf (" The queue is empty!\n");
+  if (!qlen) {
+    printf (" dequeue, The queue is empty!\n");
     return NULL;
   }
-
-  head = head % MAX_SIZE;
+  qlen--;
+  head = head % MAX_SIZE;//In case the head pointer
+                         //has wrapped around
   return queue[head++];
 
 }
 
 
-/*
- * printq
- */
-void printq(void)
-{
 
-}
 
 /*
  * main
@@ -78,27 +99,44 @@ void main(void)
 
 
   char str[10];
+  char * item;
+  int qflag = 0; // 0 - enqueue 1 - dequeue
 
-  printf ("Please input strings, end with '-' \n");
+  printf ("Please enqueue strings, start with a  '+' \n");
+  printf ("Please dequeue strings, start with a  '-' \n");
 
   while (scanf("%s", str)) {
     
-    printf(" Input: %s\n", str);
-    if (memcmp(str,"-",1) == 0) { 
-      break;
+    //printf(" Input: %s\n", str);
+
+    if (memcmp(str,"+",1) == 0) { 
+      qflag = 0;//enqueu
+      printf (" Enqeue start!\n");
+      continue;
     }
-
-    if (enqueue(str) < 0){
-      printf (" enqueue failed\n");
-      return;
+    else if (memcmp(str,"-",1) == 0) { 
+      qflag = 1;//dequeu
+      printf ("Dequeue start!\n");
+      continue;
     }
+    else {
 
-    //gprintq();
+      if (!qflag && !enqueue(str)){
+	printf (" %s enqueued \n", str);
+	printq();
+	continue;
+      }
 
-  }
+      if (qflag && (item = dequeue())) {
+	printf (" %s dequeued \n", item);
+	printq();
+	continue;
+      }
 
+    }//if-else
+    
+  }//while
   
-
 }
 
 
