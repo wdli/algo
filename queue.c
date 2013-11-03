@@ -29,18 +29,20 @@ int qlen = 0;
 void printq(void)
 {
   if (!qlen) {
-    printf (" printq The queue is empty!\n");
+    printf (" printq The queue is empty! qlen = %d, head = %d, tail = %d\n", qlen, head % MAX_SIZE, tail % MAX_SIZE);
     return;
   }
   
-  int i,j,l;
+  int i,l;
   int start;
-  
-  printf ("+++ qlen = %d, head = %d, tail = %d +++\n",qlen, head, tail);
-  for ( i = head,l=qlen; l > 0; i++,l--) {
+
+  printf ("+++ qlen = %d, head = %d, tail = %d +++\n",qlen, head % MAX_SIZE, tail % MAX_SIZE);
+
+  for ( i = head % MAX_SIZE,l=qlen; l > 0; i++,l--) {
     printf ("%s ", queue[i]);
     i = i % MAX_SIZE;
   }
+
   printf ("\n----------------------------------------\n");
 
   return;
