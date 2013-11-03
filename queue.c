@@ -38,9 +38,9 @@ void printq(void)
 
   printf ("+++ qlen = %d, head = %d, tail = %d +++\n",qlen, head % MAX_SIZE, tail % MAX_SIZE);
 
-  for ( i = head % MAX_SIZE,l=qlen; l > 0; i++,l--) {
-    printf ("%s ", queue[i]);
-    i = i % MAX_SIZE;
+  for ( i = head % MAX_SIZE,l=qlen; l > 0; i++, l--) {
+    printf ("%s ", queue[i % MAX_SIZE]);
+    //i = i++ % MAX_SIZE;
   }
 
   printf ("\n----------------------------------------\n");
@@ -66,7 +66,7 @@ static int enqueue(char* item)
   tail = tail % MAX_SIZE; //This takes care of the tail 
                           //pointer wrap around
 
-  printf (" Now tail = %d, qlen = %d\n",tail,qlen);
+  //printf (" Now tail = %d, qlen = %d\n",tail,qlen);
 
   return 0;
 }
@@ -124,13 +124,13 @@ void main(void)
     else {
 
       if (!qflag && !enqueue(str)){
-	printf (" %s enqueued \n", str);
+	printf (" '%s' enqueued \n", str);
 	printq();
 	continue;
       }
 
       if (qflag && (item = dequeue())) {
-	printf (" %s dequeued \n", item);
+	printf (" '%s' dequeued \n", item);
 	printq();
 	continue;
       }
