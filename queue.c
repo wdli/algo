@@ -5,6 +5,8 @@
  * implementation using a circular queue
  *
  * create: 11/2/2013
+ * 
+ * Todo: resize array
  *
  */
 
