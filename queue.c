@@ -36,6 +36,8 @@ void printq(void)
   int i,l;
   int start;
 
+  
+
   printf ("+++ qlen = %d, head = %d, tail = %d +++\n",qlen, head % MAX_SIZE, tail % MAX_SIZE);
 
   for ( i = head % MAX_SIZE,l=qlen; l > 0; i++, l--) {
