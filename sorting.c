@@ -4,7 +4,7 @@
  * Basic sorting algorithms
  *    Insertion sort
  *
- *
+ * Use: input an array of strings on the cmdline
  *
  * Todo
  */
@@ -21,13 +21,13 @@
 static char* str[MAX_SIZE];
 
 /*
- * swap
+ * swap item at i with item at j
  */
 static void swap(int i, int j)
 {
 
   if (!str[i] || !str[j]) {
-    printf (" Invalide strings in swap\n");
+    //printf (" Invalide strings in swap\n");
     return;
   }
 
@@ -40,7 +40,10 @@ static void swap(int i, int j)
 
 
 /*
- * compare
+ * compare item i and j
+ *
+ * item i < item j --> < 0
+ *
  */
 static int compare(int i, int j)
 {
@@ -77,9 +80,13 @@ printStr(void)
  * Invariants:
  *
  * To the left of pointer: sorted
- * To the right of pointer: unsorted,
- *    find the min and swap with the
+ * To the right of pointer: unsorted.
+ *
+ * Algo:
+ *    find the min to the right and swap with the
  *    item at the pointer
+ *    "search to the right"
+ * Perf:
  *    1/2 N**2 time
  */
 static void selectionSort(void)
@@ -108,6 +115,51 @@ static void selectionSort(void)
   
   return;
 }
+
+
+
+
+/*
+ * insertionSort
+ *
+ * Invariants
+ *
+ * To left of the current pointer: sorted
+ * To right of the pointer: unsorted
+ * Algo:
+ *    current pointer++
+ *    compare the entry[pointer] with its previous entry
+ *    if less, then swap and continue, otherwise break
+ *    " search to the left " 
+ * Perf:
+ *   1/4 N**2
+ *  
+ */
+
+static void
+insertionSort(void)
+{
+  
+  int i,j;
+  
+  for (i=0; i<MAX_SIZE; i++) {
+    
+    if (!str[i])
+      break;
+
+    for (j = i; j > 0; j--) {
+      
+      if (compare(j, j-1) < 0 ) {
+	swap(j,j-1);
+      }
+      
+    }//for j
+
+  } //for i
+
+  return;
+}
+
 
 
 /*
@@ -145,8 +197,13 @@ int main(int argc, char *argv[])
   printStr();
 
   //selection sort
+  //printf (" Selection sort test\n");
+  //selectionSort();
 
-  selectionSort();
+  //insertion sort
+  printf (" Insertion sort test\n");
+  insertionSort();
+
   printStr();
   
   return 0;
