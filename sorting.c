@@ -3,10 +3,13 @@
  *
  * Basic sorting algorithms
  *    Insertion sort
+ *    Selection sort
+ *    Merge sort
  *
  * Use: input an array of strings on the cmdline
  *
- * Todo
+ * Todo:
+ *
  */
 
 #include <stdlib.h>
@@ -19,6 +22,7 @@
  */
 #define MAX_SIZE 10
 static char* str[MAX_SIZE];
+static char* straux[MAX_SIZE]; //for merge sort
 
 /*
  * swap item at i with item at j
@@ -160,6 +164,56 @@ insertionSort(void)
   return;
 }
 
+/**
+ * merge function
+ * This does the merge of two sorted sub-arrays
+ *
+ */
+static mergeSortMerge(void)
+{
+  //copy the origina array
+  for (int k = 0; k < MAX_SIZE; k++) {
+    straux[k] = str[k];
+  }
+  
+  int  i = lo;   //track the first half of the sorted array
+  int  j = mid+1;//track the second half
+
+  for ( int k = lo; k <= hi; k++) {
+    //iterate thru the whole array
+    
+    //todo: new compare to compare 2 array values not indexes 
+
+  }
+
+}
+
+/*
+ * mergeSort
+ *
+ * This recursively sorts the two sub arrays
+ *
+ * 
+ */
+static
+void mergeSortRecursive(int lo, int hi)
+{
+  int lo = 0;
+  int hi = MAX_SIZE - 1;
+  
+  if (hi <= lo) {
+    printf (" Return lo = %d, hi = %d\n", lo, hi);
+    return;
+  }
+  int mid = lo + (hi-lo)/2;
+  printf (" mid = %d\n",mid);
+
+  mergeSortRecursive(lo,mid);
+  mergeSortRecursive(mid+1, hi);
+  
+  mergeSortMerge(lo,mid,hi);
+
+}
 
 
 /*
