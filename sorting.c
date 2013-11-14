@@ -6,7 +6,7 @@
  *
  * Use: input an array of strings on the cmdline
  *
- * Todo
+ * Todo:
  */
 
 #include <stdlib.h>
