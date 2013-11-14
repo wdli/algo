@@ -27,17 +27,17 @@ static char* straux[MAX_SIZE]; //for merge sort
 /*
  * swap item at i with item at j
  */
-static void swap(int i, int j)
+static void swap(char *a[], int i, int j)
 {
 
-  if (!str[i] || !str[j]) {
+  if (!a[i] || !a[j]) {
     //printf (" Invalide strings in swap\n");
     return;
   }
 
-  char * temp = str[i];
-  str[i] = str[j];
-  str[j] = temp;
+  char * temp = a[i];
+  a[i] = a[j];
+  a[j] = temp;
 }
 
 
@@ -49,28 +49,28 @@ static void swap(int i, int j)
  * item i < item j --> < 0
  *
  */
-static int compare(int i, int j)
+static int compare(char* a[], int i, int j)
 {
-  if (!str[i] || !str[j]) {
+  if (!a[i] || !a[j]) {
     //printf (" Invalide strings in compare\n");
     return;
   }
 
-  return strcmp(str[i], str[j]);
+  return strcmp(a[i], a[j]);
 }
 
 /**
  * printStr
  */
 static void 
-printStr(void)
+printStr(char * a[])
 {
   int i;
   
   printf ("+++ String array dump +++\n");
   for ( i = 0; i < MAX_SIZE; i++) {
-    if (str[i])
-      printf ("%s ", str[i]);
+    if (a[i])
+      printf ("%s ", a[i]);
   }
   printf ("\n+++\n");
 
@@ -107,13 +107,13 @@ static void selectionSort(void)
 
     min = i;
     for (j = i+1 ; j < MAX_SIZE; ++j) {
-      if (compare(j, min) < 0 ) {
+      if (compare(str, j, min) < 0 ) {
 	min = j;
       }
     }
     //swap
 
-    swap(i,min);
+    swap(str, i,min);
 
   }//end
   
@@ -130,6 +130,7 @@ static void selectionSort(void)
  *
  * To left of the current pointer: sorted
  * To right of the pointer: unsorted
+ *
  * Algo:
  *    current pointer++
  *    compare the entry[pointer] with its previous entry
@@ -153,8 +154,8 @@ insertionSort(void)
 
     for (j = i; j > 0; j--) {
       
-      if (compare(j, j-1) < 0 ) {
-	swap(j,j-1);
+      if (compare(str, j, j-1) < 0 ) {
+	swap(str, j,j-1);
       }
       
     }//for j
@@ -169,48 +170,65 @@ insertionSort(void)
  * This does the merge of two sorted sub-arrays
  *
  */
-static mergeSortMerge(void)
+static mergeSortMerge(int lo, int mid, int hi)
 {
-  //copy the origina array
-  for (int k = 0; k < MAX_SIZE; k++) {
+  int k;
+
+  //copy the original array
+
+  for (k = 0; k < MAX_SIZE; k++) {
     straux[k] = str[k];
   }
   
   int  i = lo;   //track the first half of the sorted array
   int  j = mid+1;//track the second half
 
-  for ( int k = lo; k <= hi; k++) {
-    //iterate thru the whole array
-    
-    //todo: new compare to compare 2 array values not indexes 
+  for ( k = lo; k <= hi; k++) {
 
+    if ( i > mid ) {
+      // first half has been exhausted, copy rest of the right half
+      str[k] = straux[j++];
+    }
+    else if ( j > hi ) {
+      // second half has been exhausted, copy rest of the first half
+      str[k] = straux[i++];
+    }
+    else if (compare(straux, i,j) < 0 ) {
+      // the jth in the second half is less than the ith in the
+      // first half, copy jth over and advance j
+      str[k] = straux[j++];
+    }
+    else {
+      // the ith in the first half is less than the jth in the
+      // second half, copy jth over and advance i
+      str[k] = straux[i++];
+    }
   }
 
 }
 
 /*
- * mergeSort
+ * mergeSortRecursive
  *
- * This recursively sorts the two sub arrays
+ * This merge sort API that recursively sorts the two sub arrays
  *
  * 
  */
 static
 void mergeSortRecursive(int lo, int hi)
 {
-  int lo = 0;
-  int hi = MAX_SIZE - 1;
   
   if (hi <= lo) {
-    printf (" Return lo = %d, hi = %d\n", lo, hi);
+    printf (" * Stop: lo = %d, hi = %d\n", lo, hi);
     return;
   }
+
   int mid = lo + (hi-lo)/2;
-  printf (" mid = %d\n",mid);
+  printf (" + Recur: lo = %d, mid = %d, hi = %d\n",lo, mid, hi);
 
   mergeSortRecursive(lo,mid);
   mergeSortRecursive(mid+1, hi);
-  
+
   mergeSortMerge(lo,mid,hi);
 
 }
@@ -247,18 +265,23 @@ int main(int argc, char *argv[])
       break;
     }
   }
- 
-  printStr();
 
-  //selection sort
+  int num = argc -1;
+  printf (" Number of items : %d\n",num);
+  printStr(str);
+
+  //Uncomment the next 2 lines: selection sort
   //printf (" Selection sort test\n");
   //selectionSort();
 
-  //insertion sort
-  printf (" Insertion sort test\n");
-  insertionSort();
+  //Uncomment the next 2 lines: insertion sort
+  //printf (" Insertion sort test\n");
+  //insertionSort();
 
-  printStr();
+  printf (" Merge sort\n");
+  mergeSortRecursive(0, num-1);
+
+  printStr(str);
   
   return 0;
 }
