@@ -193,7 +193,7 @@ static mergeSortMerge(int lo, int mid, int hi)
       // second half has been exhausted, copy rest of the first half
       str[k] = straux[i++];
     }
-    else if (compare(straux, i,j) < 0 ) {
+    else if (compare(straux, i,j) > 0 ) {
       // the jth in the second half is less than the ith in the
       // first half, copy jth over and advance j
       str[k] = straux[j++];
