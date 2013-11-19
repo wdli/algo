@@ -249,42 +249,53 @@ qsortPart(char* a[], int lo, int hi)
   int i = lo;    
   int j = hi+1;
 
+  printf ("    === The partion starts===\n");
 
   while (1) {
     //
     // scan from left to right as long as 
     // i is less than lo
     //
+    printf ("    +Scan left start, cur index = %d\n", i);
     while (compare(a, ++i, lo) < 0) {
-      if ( i == j)
+      printf ("    Scan left, cur index = %d\n", i);
+      if ( i == hi)
 	break;
     }
-
+    printf ("    -Scan left end, cur index = %d\n", i);
+    
 
     //
     // scan from right to left as long as
     // j is larger than lo
     //
+    printf ("    +Scan right start, cur index = %d\n", j);
     while (compare(a, lo, --j) < 0 ) {
+      printf ("    Scan right, cur index = %d\n", j);
       if (j == lo)
 	break;
     }
+    printf ("    -Scan right end, cur index = %d\n", j);
     // 
     // if i and j crossed
     // means there are no two items 
     // that need to be exchanged or swapped
     // 
-    if ( i >= j)
+    if ( i >= j) {
+      printf ("    %d and %d crossed\n", i,j);
       break;
+    }
 
     // 
     // swap i and j as they are
     // out of the place
     // keep going
     // 
-    swap(a, i,j);
+    swap(a, i, j);
+    printf ("    exchanged %d and %d\n",i,j);
+    printStr(a);
 
-  }
+  }//while(1)
 
   // 
   // Once we are there, we have found
@@ -292,7 +303,11 @@ qsortPart(char* a[], int lo, int hi)
   // that is the j
   // 
   swap(a, lo, j);
-
+  printf ("    exchanged %d and %d\n",lo,j);
+  printStr(a);
+  printf ("    ===The partition ends index %d===\n",j);
+  
+  
   return j; // the partition index
 
 }
@@ -305,6 +320,9 @@ qsortPart(char* a[], int lo, int hi)
 void qsortSort(char* a[], int lo, int hi)
 {
   
+  if (hi <= lo)
+    return;
+
   // partition the array at j, ie, 
   // j is in the right place
   // 
