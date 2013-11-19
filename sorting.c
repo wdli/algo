@@ -234,6 +234,91 @@ void mergeSortRecursive(int lo, int hi)
 }
 
 
+
+/*
+ * qsortPart
+ *
+ * Partition an array in a quick sort
+ * Find a place in the array such that
+ * all items to the left is less and
+ * all items to the right is larger
+ */
+static int 
+qsortPart(char* a[], int lo, int hi)
+{
+  int i = lo;    
+  int j = hi+1;
+
+
+  while (1) {
+    //
+    // scan from left to right as long as 
+    // i is less than lo
+    //
+    while (compare(a, ++i, lo) < 0) {
+      if ( i == j)
+	break;
+    }
+
+
+    //
+    // scan from right to left as long as
+    // j is larger than lo
+    //
+    while (compare(a, lo, --j) < 0 ) {
+      if (j == lo)
+	break;
+    }
+    // 
+    // if i and j crossed
+    // means there are no two items 
+    // that need to be exchanged or swapped
+    // 
+    if ( i >= j)
+      break;
+
+    // 
+    // swap i and j as they are
+    // out of the place
+    // keep going
+    // 
+    swap(a, i,j);
+
+  }
+
+  // 
+  // Once we are there, we have found
+  // a place that can be used as a partion point
+  // that is the j
+  // 
+  swap(a, lo, j);
+
+  return j; // the partition index
+
+}
+
+
+/*
+ * qsort
+ *
+ */
+void qsortSort(char* a[], int lo, int hi)
+{
+  
+  // partition the array at j, ie, 
+  // j is in the right place
+  // 
+  int j = qsortPart(a,lo,hi);
+  printf (" lo = %d, hi = %d, partition index = %d\n",lo,hi,j);
+
+  // sort the left partition
+  qsortSort(a,lo,j-1); 
+
+  // sort the right partition
+  qsortSort(a,j+1,hi);
+  
+}
+
 /*
  * main
  */
@@ -278,8 +363,12 @@ int main(int argc, char *argv[])
   //printf (" Insertion sort test\n");
   //insertionSort();
 
-  printf (" Merge sort\n");
-  mergeSortRecursive(0, num-1);
+  // printf (" Merge sort\n");
+  // mergeSortRecursive(0, num-1);
+
+
+  printf (" Quick sort\n");
+  qsortSort(str, 0, num-1);
 
   printStr(str);
   
