@@ -5,6 +5,8 @@
  *    Insertion sort
  *    Selection sort
  *    Merge sort
+ *    Quick sort
+ *    Heap sort
  *
  * Use: input an array of strings on the cmdline
  *
@@ -242,6 +244,8 @@ void mergeSortRecursive(int lo, int hi)
  * Find a place in the array such that
  * all items to the left is less and
  * all items to the right is larger
+ * That's the invariat of quick sort
+ *
  */
 static int 
 qsortPart(char* a[], int lo, int hi)
@@ -337,6 +341,127 @@ void qsortSort(char* a[], int lo, int hi)
   
 }
 
+
+
+
+/**
+ * heapSortSwim
+ *
+ * If a node index is k, the its parent index is k/2
+ * it's child index is 2k and 2k+1
+ *
+ * This function finds if the child is smaller than its parent
+ * then move it up and move its parent node down to maintain the
+ * heap order or invariant
+ *
+ */
+static void
+heapSortSwim(char* a[], int k)
+{
+  
+  while( k > 1 && compare(a, k/2, k) < 0 ) {
+    swap(a, k/2, k);
+    k = k/2; // update the node to its parent index
+  }
+
+}
+
+
+/**
+ * If the array is indexed by zero
+ * If a node is k, it's children are at 2k+1 and 2k+2
+ *
+ * If it's less than its largest child, then
+ * swap them
+ *
+ * Note: N is not the largest index, N-1 is.
+ */
+static void
+heapSortSink(char * a[], int k, int N)
+{
+
+  printf (" %s: k = %d, N = %d\n",__FUNCTION__, k, N);
+  while (2*k+1 <= N-1) {
+
+    int j = 2*k+1;
+    printf (" Sink looking at node %d, its children %d and %d\n",
+	    k, j, j+1);
+
+    // 
+    // find out which child node is larger
+    // j+1 is the right child of k, make sure 
+    // its index can't be larger than the largest index N-1
+    // 
+    if (j+1 <= N-1 && compare(a, j, j+1) < 0 ) {
+      j++;
+    }
+
+    printf ("  Now compare k = %d to %d\n", k, j);
+    //
+    // compare node k to the larger of its two children
+    // if larger, we are done
+    //
+
+    if ( compare(a,k,j) > 0 ) {
+      printf ("  k = %d is larger than %d, we are OK\n", k, j);
+      break;
+    }
+    
+    //
+    // if node k is less than the child then swap them
+    //
+    printf ("   Sink %d with %d\n", k, j);
+    swap(a,k,j);
+    k = j;
+    
+  }
+}
+
+
+/*
+ * This function sort a random binary tree
+ * into a heap order
+ * First pass:  build a heap by bottom-up approach
+ * Second pass: remove the root but leave it in the array
+ *
+ */
+void
+binaryHeapSort(char* a[], int N)
+{
+  int k;
+  
+  // first pass:
+  printf (" +++ Heap sort first pass to creat heap order, N = %d\n", N);
+  printf ("======================================================\n");
+  for (k = N/2; k>=0; k--) {
+    heapSortSink(a, k, N);
+  }
+
+  printStr(a);
+
+  //second pass:
+  printf (" +++ Heap sort second pass to remove the root\n");
+  printf ("======================================================\n");
+  while(N > 0) {
+
+    printf (" swap node 0 and %d\n", N-1);
+    swap(a, 0, --N);
+    printStr(a);
+    printf (" Sink new node 0, size N = %d\n", N);
+    heapSortSink(a, 0, N);
+    printStr(a);
+  }
+
+
+}
+
+
+
+
+
+
+
+
 /*
  * main
  */
@@ -384,9 +509,12 @@ int main(int argc, char *argv[])
   // printf (" Merge sort\n");
   // mergeSortRecursive(0, num-1);
 
+  // uncomment for quick sort
+  //printf (" Quick sort\n");
+  //qsortSort(str, 0, num-1);
 
-  printf (" Quick sort\n");
-  qsortSort(str, 0, num-1);
+  printf (" Heap sort\n");
+  binaryHeapSort(str,num);
 
   printStr(str);
   
