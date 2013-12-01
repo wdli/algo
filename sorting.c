@@ -326,17 +326,17 @@ void qsortSort(char* a[], int lo, int hi)
   
   if (hi <= lo)
     return;
-
+  // 
   // partition the array at j, ie, 
   // j is in the right place
   // 
   int j = qsortPart(a,lo,hi);
   printf (" lo = %d, hi = %d, partition index = %d\n",lo,hi,j);
 
-  // sort the left partition
+  // sort the left partition recursively
   qsortSort(a,lo,j-1); 
 
-  // sort the right partition
+  // sort the right partition recursively
   qsortSort(a,j+1,hi);
   
 }
@@ -345,7 +345,7 @@ void qsortSort(char* a[], int lo, int hi)
 
 
 /**
- * heapSortSwim
+ * heapSortSwim (not used yet)
  *
  * If a node index is k, the its parent index is k/2
  * it's child index is 2k and 2k+1
@@ -369,7 +369,7 @@ heapSortSwim(char* a[], int k)
 
 /**
  * If the array is indexed by zero
- * If a node is k, it's children are at 2k+1 and 2k+2
+ * then a node k, it's children are at 2k+1 and 2k+2
  *
  * If it's less than its largest child, then
  * swap them
@@ -381,7 +381,12 @@ heapSortSink(char * a[], int k, int N)
 {
 
   printf (" %s: k = %d, N = %d\n",__FUNCTION__, k, N);
-  while (2*k+1 <= N-1) {
+
+  while (2*k+1 <= N-1) { // This checks if k has any children 
+                         // under him. If the left child index
+                         // is larger than the largest index
+                         // it means it has no child nodes
+                         // otherwise, it may have at least one
 
     int j = 2*k+1;
     printf (" Sink looking at node %d, its children %d and %d\n",
@@ -396,12 +401,11 @@ heapSortSink(char * a[], int k, int N)
       j++;
     }
 
-    printf ("  Now compare k = %d to %d\n", k, j);
+    printf ("  Now compare k = %d to child %d\n", k, j);
     //
     // compare node k to the larger of its two children
     // if larger, we are done
     //
-
     if ( compare(a,k,j) > 0 ) {
       printf ("  k = %d is larger than %d, we are OK\n", k, j);
       break;
@@ -420,7 +424,9 @@ heapSortSink(char * a[], int k, int N)
 
 /*
  * This function sort a random binary tree
- * into a heap order
+ * into a heap order. The sorting is done in place
+ * without using additional memeory
+ *
  * First pass:  build a heap by bottom-up approach
  * Second pass: remove the root but leave it in the array
  *
@@ -442,12 +448,20 @@ binaryHeapSort(char* a[], int N)
   //second pass:
   printf (" +++ Heap sort second pass to remove the root\n");
   printf ("======================================================\n");
+
+  //
+  // N is the size of the sub tree
+  // during each iteration, the tree size is reduced by 1
+  // so we don't touch the newly placed root node anymore
+  // 
   while(N > 0) {
 
     printf (" swap node 0 and %d\n", N-1);
     swap(a, 0, --N);
     printStr(a);
-    printf (" Sink new node 0, size N = %d\n", N);
+
+    
+    printf (" Sink new node 0, sub tree size N = %d\n", N);
     heapSortSink(a, 0, N);
     printStr(a);
   }
@@ -458,18 +472,12 @@ binaryHeapSort(char* a[], int N)
 
 
 
-
-
-
-
 /*
  * main
  */
 int main(int argc, char *argv[])
 {
   
-
-
   if (argc < 2 ) {
     printf (" Missing input strings\n");
     return 0;
