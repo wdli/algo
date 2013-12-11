@@ -2,6 +2,7 @@
  * bst.c
  *
  * Implement basic binary search tree 
+ *           basic Red-black tree ops
  *
  */
 
@@ -16,10 +17,32 @@
 #define MAX_SIZE 10
 char * str[MAX_SIZE];
 
+
+typedef enum _bool {
+  
+  BOOL_START,
+  FALSE,
+  TRUE,
+  BOOL_END,
+
+} BOOL;
+
+typedef enum _color {
+
+  COLOR_START,
+  BLACK,
+  RED,
+  COLOR_END,
+
+} COLOR;
+
 typedef struct _node {
+
   char * key;
   struct _node * left;
   struct _node * right;
+  COLOR  color;   // For RB tree, the color of parent link
+
 } NODE;
 
 NODE * root = NULL;
@@ -83,7 +106,121 @@ void printBst(NODE * n)
 }
 
 
+/*
+ * RBIsRed
+ */
+static BOOL
+RBIsRed(NODE *n)
+{
 
+  if (!n)
+    return FALSE;
+  /*
+  if (n->color == RED ) 
+    return TRUE;
+  else
+    return FALSE;
+  */
+
+  return n->color == RED ? TRUE: FALSE;
+}
+
+/**
+ * RBRotateLeft
+ * RB basic op
+ */
+static NODE*
+RBRotateLeft(NODE *n)
+{
+  //
+  // n is the node to be rotated to the left, x is its 
+  // current right child
+  // 
+  // The rotation requires n to change its right child
+  // and x to change its left child to maintain the RB tree invariant
+  // also update the coloring of both 
+  // 
+
+  if (!n || RBIsRed(n->right) == FALSE) {
+    printf (" %s, Node is invalid\n",__FUNCTION__);
+    return NULL;
+  }
+
+  NODE *x = n->right; // save the right child
+
+  n->right = x->left; // Change n's rigth child: move the left child of the right child 
+                      // under the node to be rotated to the left
+  
+  x->left = n; // Change x's left child: make n the new left child of x
+
+  x->color = n->color; // let x inherit n's color
+
+  n->color = RED; // let n parent link be in RED after rotation
+
+  return x; 
+
+
+}
+
+/*
+ * RBRotateRight
+ * RB basic op: orient a left-leaning red link to temporarily lean right
+ */
+static NODE*
+RBRotateRight(NODE *n)
+{
+
+  //
+  // This is the exact opposite of RBRotateLeft
+  // 
+
+  if (!n || RBIsRed(n->left) == FALSE) {
+    printf (" %s, Invalid note to roate\n",__FUNCTION__);
+    return NULL;
+  }
+
+  // change the children of n and x
+  // 
+
+  NODE* x = n->left;
+  n->left = x->right;
+  x->right = n;
+
+  // update the coloring
+  // 
+
+  x->color = n->color;
+  n->color = RED;
+  
+  return x;
+  
+}
+
+
+
+/*
+ * RBFlipColors
+ */
+static void
+RBFlipColors(NODE* n)
+{
+
+  if (!n ||
+      RBIsRed(n->left) == FALSE ||
+      RBIsRed(n->right) == FALSE ) {
+
+    printf ("%s, Invalid node\n",__FUNCTION__);
+    return;
+  }
+
+  n->color = RED;
+  n->left->color = BLACK;
+  n->right->color = BLACK;
+
+  return;
+
+
+}
 
 /*
  * bstInsert
