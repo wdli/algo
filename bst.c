@@ -198,6 +198,8 @@ RBRotateRight(NODE *n)
 
 
 
+
+
 /*
  * RBFlipColors
  */
@@ -205,6 +207,10 @@ static void
 RBFlipColors(NODE* n)
 {
 
+  // 
+  // For a "4-node", if both children have RED links, then
+  // change them to BLACK and give RED to the parent
+  // 
   if (!n ||
       RBIsRed(n->left) == FALSE ||
       RBIsRed(n->right) == FALSE ) {
@@ -218,9 +224,11 @@ RBFlipColors(NODE* n)
   n->right->color = BLACK;
 
   return;
-
-
 }
+
+
+
+
 
 /*
  * bstInsert
@@ -272,6 +280,79 @@ NODE * bstInsert(NODE * parent, char * item)
 
 
 
+/* 
+ * RBTreeInsert
+ */
+
+NODE* 
+RBTreeInsert(NODE* parent, char * item)
+{
+  NODE* new;
+  int cmp;
+
+  // 
+  // Recursion termination condition
+  // 
+  if (!parent) {
+    new = (NODE*) malloc(sizeof(NODE));
+    new->left  = NULL;
+    new->right = NULL;
+    new->key   = item;
+    new->color = RED; // all new nodes have parent link in RED
+    printf ("Inserted a new node with key: %s\n", item);
+    return new;
+  }
+
+  cmp = compare (item, parent->key);  
+  
+  if (cmp < 0 ) {
+    // go to the left subtree
+    printf ("   Go to the left of %s for item %s\n", parent->key, item);
+    parent->left = RBTreeInsert(parent->left, item);
+  }
+  else if ( cmp > 0 ) {
+   
+    //goto the right tree
+    printf ("   Go to the right of %s for item %s\n", parent->key, item);
+    parent->right = RBTreeInsert(parent->right, item);
+  }
+  else {
+    // it's a match
+    // do nothing for now
+    printf (" Matched!\n");
+  }
+
+  // For RB tree, perform rotation if necessary 
+  // to keep the invariants
+
+  if ( RBIsRed(parent->right) == TRUE &&
+       RBIsRed(parent->left) == FALSE ) {
+    // RED on the right, rotate to the left
+    // to lean left
+    printf (" Rotate to the left of %s\n",parent->key);
+    parent = RBRotateLeft(parent); 
+  }
+
+
+  if ( RBIsRed(parent->left) == TRUE &&
+       RBIsRed(parent->left->left) == TRUE ) {
+    // RED on the left and also left of left, rotate to the right
+    // to balance a 4 node
+    printf (" Rotate to the right of %s\n",parent->key);
+    parent = RBRotateRight(parent); 
+  }
+  
+  if ( RBIsRed(parent->right) == TRUE &&
+       RBIsRed(parent->left) == TRUE ) {
+    // RED on the right and left, flip colors
+    //
+    printf (" Flip the color of %s\n",parent->key);
+    RBFlipColors(parent); 
+  }
+
+  return parent;
+}
+
 /*
  * main (took from sorting.c)
  *
@@ -313,10 +394,11 @@ int main(int argc, char *argv[])
 
   for ( i = 0; i<MAX_SIZE; i++) {
 
-    //BST insert
+    //BST or RB tree insert
     if (str[i]) {
-      printf ("+ Client asks to insert %s\n", str[i]);
-      root = bstInsert(root, str[i]);
+      printf ("+ Client asks to insert %s to the RB Tree\n", str[i]);
+      //root = bstInsert(root, str[i]);
+      root = RBTreeInsert(root, str[i]);
     }
   }
 
