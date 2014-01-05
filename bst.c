@@ -42,10 +42,25 @@ typedef struct _node {
   struct _node * left;
   struct _node * right;
   COLOR  color;   // For RB tree, the color of parent link
+  int marked; // 0 unmarked 1 -marked
 
 } NODE;
 
 NODE * root = NULL;
+
+// 
+// Queueing for BSF
+// using a singular link list
+//
+typedef struct _queue
+{
+  NODE* node;
+  struct _queue * next;
+
+} QUEUE;
+
+QUEUE * head = NULL, * tail = NULL;
+
 
 
 /**
@@ -90,6 +105,9 @@ printStr(char * a[])
  * printBst
  * 
  * Traverse inorder a BST and print out the key
+ * This is also DFS. 
+ * It prints out the keys in ascending order
+ *
  *
  */
 void printBst(NODE * n)
@@ -104,6 +122,146 @@ void printBst(NODE * n)
 
   return;
 }
+
+
+
+/*
+ * bstEnqueue
+ */
+static void bstEnqueue (NODE* n)
+{
+
+  QUEUE * q = (QUEUE*) malloc(sizeof(QUEUE));
+  q->node = n;
+  q->next = NULL;
+  
+  if (!tail && ! head) {
+    
+    // first node
+
+    head = q;
+    tail = head;
+    return;
+  }
+
+  tail->next = q;
+  tail = q;
+  
+  return;
+
+}
+
+/*
+ * bstDequeue
+ */
+
+static NODE* bstDequeue(void)
+{
+  if (!head) {
+    return NULL;
+  }
+  
+  QUEUE * q = head;
+  head = head->next;
+
+  q->next = NULL;
+
+  // todo: should free the q now
+  return q->node;
+}
+
+
+
+/* 
+ * bstPrintQueue
+ */
+static void bstPrintQueue(void)
+{
+
+
+  QUEUE * q = head;
+  printf ("--- Print Queue Start ---\n");
+  
+  if (!q) {
+    printf (" Empty queue!\n");
+    return;
+  }
+
+  while (q) {
+    printf ("%s, ", q->node->key);
+    q = q->next;
+  }
+ 
+  printf ("\n--- Print Queue End ---\n");
+
+}
+/*
+ * printBstBSF
+ *
+ * Use BSF to walk the BST tree. 
+ * The NODE struct doesn't have graph adj-list, but
+ * we can use left and right link as if they are the adj list
+ *
+ * BSF Breath Search First: 
+ * Put unvisited nodes into a queue. Dequeue and find out 
+ * its left and right child, enqueue them. 
+ * 
+ */
+
+void printBstBSF(NODE *n)
+{
+  if (!n) {
+    return;
+  }
+
+  // put the starting node in the queue
+
+  bstEnqueue(n);
+  n->marked = 1;
+
+  // start dequeue
+
+  NODE* v;
+  while (v = bstDequeue()) {
+
+    if (v->marked == 1) {
+      // if marked (visited) keep going
+      continue;
+    }
+
+    printf (" %s\n", v->key);
+    // put the left and right child in queue
+    // and mark them
+
+    if (v->left) {
+      bstEnqueue(v->left);
+      v->left->marked = 1;
+    }
+    else if (v->right) {
+      bstEnqueue(v->right);
+      v->right->marked = 1;
+    }
+    else {
+      continue;
+    }
+
+  }// while
+  
+}
+
+/*
+ * printBstDSF
+ *
+ * Use DSF to walk the BST tree. 
+ * The NODE struct doesn't have graph adj-list, but
+ * we can use left and right link as if they are the adj list
+ *
+ *
+ */
+
+
+
+
 
 
 /*
@@ -395,16 +553,48 @@ int main(int argc, char *argv[])
   for ( i = 0; i<MAX_SIZE; i++) {
 
     //BST or RB tree insert
+
     if (str[i]) {
-      printf ("+ Client asks to insert %s to the RB Tree\n", str[i]);
+      printf ("+ Client asks to insert %s to the Tree\n", str[i]);
+
+      // uncomment the following line for regular BST tree
       //root = bstInsert(root, str[i]);
-      root = RBTreeInsert(root, str[i]);
+
+      // uncomment the following line for RB tree
+      //root = RBTreeInsert(root, str[i]);
+
+      // testing bst queueing
+      NODE *n = (NODE*) malloc(sizeof(NODE));
+      n->key = str[i];
+      bstEnqueue(n);
+      bstPrintQueue();
+      
+      
     }
   }
 
+
+
+  // testing dequeue only
+  // 
+  for ( i = 0; i<MAX_SIZE; i++) {
+
+    NODE * n = bstDequeue();
+    if (n) 
+      printf (" Dequeued: %s\n", n->key);
+
+    bstPrintQueue();
+
+  }
+
+
+
+  /*
   printf (" === BST Print Start===\n");
   printBst(root);
   printf (" === BST Print End===\n");
+  */
+
 
   return 0;
 
