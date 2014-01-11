@@ -135,18 +135,21 @@ static void bstEnqueue (NODE* n)
   q->node = n;
   q->next = NULL;
   
+  
+
   if (!tail && ! head) {
     
     // first node
-
     head = q;
     tail = head;
+    printf (" + Enqueued %s, first node\n",n->key);
     return;
   }
 
   tail->next = q;
   tail = q;
-  
+  printf (" + Enqueued %s\n",n->key);
+
   return;
 
 }
@@ -163,10 +166,16 @@ static NODE* bstDequeue(void)
   
   QUEUE * q = head;
   head = head->next;
+  if (!head) {
+    // empty now
+    //printf (" + queue empty\n");
+    tail = head;
+  }
 
   q->next = NULL;
 
   // todo: should free the q now
+  printf (" + Dequeued %s\n",q->node->key);
   return q->node;
 }
 
@@ -218,32 +227,31 @@ void printBstBSF(NODE *n)
 
   bstEnqueue(n);
   n->marked = 1;
+  //bstPrintQueue();
 
   // start dequeue
 
   NODE* v;
   while (v = bstDequeue()) {
 
-    if (v->marked == 1) {
-      // if marked (visited) keep going
-      continue;
-    }
 
-    printf (" %s\n", v->key);
+    printf (" %s \n", v->key);
+
+    // check its left and right child
     // put the left and right child in queue
     // and mark them
 
-    if (v->left) {
+    if (v->left && v->left->marked == 0) {
       bstEnqueue(v->left);
       v->left->marked = 1;
     }
-    else if (v->right) {
+    
+    if (v->right && v->right->marked == 0) {
       bstEnqueue(v->right);
       v->right->marked = 1;
     }
-    else {
-      continue;
-    }
+
+    //bstPrintQueue();
 
   }// while
   
@@ -561,13 +569,13 @@ int main(int argc, char *argv[])
       //root = bstInsert(root, str[i]);
 
       // uncomment the following line for RB tree
-      //root = RBTreeInsert(root, str[i]);
+      root = RBTreeInsert(root, str[i]);
 
-      // testing bst queueing
+      /* testing bst queueing 
       NODE *n = (NODE*) malloc(sizeof(NODE));
       n->key = str[i];
       bstEnqueue(n);
-      bstPrintQueue();
+      bstPrintQueue();*/
       
       
     }
@@ -575,8 +583,8 @@ int main(int argc, char *argv[])
 
 
 
-  // testing dequeue only
-  // 
+  /* testing dequeue only
+   
   for ( i = 0; i<MAX_SIZE; i++) {
 
     NODE * n = bstDequeue();
@@ -587,13 +595,16 @@ int main(int argc, char *argv[])
 
   }
 
-
-
-  /*
-  printf (" === BST Print Start===\n");
-  printBst(root);
-  printf (" === BST Print End===\n");
   */
+
+
+  printf (" === BST Print Start===\n");
+  printf (" Depth search first \n");
+  printBst(root);
+  printf (" Breath search first \n");
+  printBstBSF(root);
+  printf ("\n=== BST Print End===\n");
+
 
 
   return 0;
